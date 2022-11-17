@@ -1,0 +1,26 @@
+[
+    {
+        "_id": 1001,
+        "comfort-feature": "Blind Spot Monitoring"
+    },
+    {
+        "_id": 1002,
+        "comfort-feature": "Premium Sound System"
+    },
+    {
+        "_id": 1003,
+        "comfort-feature": "Wireless Connectivity"
+    },
+    {
+        "_id": 1004,
+        "comfort-feature": "Digital Keys"
+    },
+    {
+        "_id": 1005,
+        "comfort-feature": "AI Bot Alexa Enabled"
+    },
+    {
+        "_id": 1006,
+        "comfort-feature": "Ventilated Seats"
+    }
+]
