@@ -24,7 +24,6 @@ Sharing these information allow them to know about the potential of buying a cer
 #### Organization's Goals
 I usually get information on cars by reading car magazines or showroom website description. This car review site centralises all the information of different brands of cars and gives users a convenient and unbiased description of cars that they may be interested in. 
 
-
 #### Users' Goals
  The users of this site are usually aged 25 -35, use the internet for researching items they want to buy and enjoy reading other's reviews of using certain products. They would like to know the benefits of a certain car, compare with other types of cars, and see the reception of other users toward the functionality of a car. 
 
@@ -52,37 +51,37 @@ I usually get information on cars by reading car magazines or showroom website d
 
 User Stories | Acceptance Criteria(s)
 ------------ | -------------
-As a potential tourist to the target city/country, I am interested to know what attractions/food/activities that the location has to offer that is deemed a good experience by other travellers | Articles should be able to show all the places visited by other users and see how well they are rated by these users along with the price they spend at the attarction/food/activity
-As a potential tourist that wishes to stick to a budget but also experience a good time in a particular location | Users must be able to search for articles that shows attractions that are free
-As a potential tourist, I want to visit locations that are highly-rated(4-5 stars) | Articles should be searchable by the best-rated ones
-As a potential tourist, I may have certain preferences when it comes to looking for attractions, I could prefer places that have scenery or activities to do | Articles should be searchable by what they are best known for, for example, searching for attractions with scenery may return articles that involves places with scenic views as part of their attraction.
+As a car hobbyist, I want to share my reviews about a car with other user | Website must allow creating of post and adding details of car. 
+As a car hobbyist, I want to learn more about new cars by viewing others review post on car
+| Website must allow searching and display of information of car to users
+As a car hobbyist, I would like to comment and ask user about car | Website must allow user to ask questions or comment on other's reviews.  
+As a car hobbyist, I require a search rating of car and car name | Website should allow search of car by name and current rating by reviewer
+Know specific features of a car | Website must display the features of the car so users know whether this is the car of their choice
 
 ### Scope
 
 ### Database
 
-A backend server will thus be necessary in order to allow communication between the site and MongoDB. As such an Express server have been set up and deployed to [Heroku](https://www.heroku.com/). API endpoints are accessible via the base at https://tgc-wanderlust.herokuapp.com/.
+An Express server is used to store the information and access endpoints on a MongoDB. 
 
 #### Content
-Content will be crowd sourced from public, thus presentation of data contributed to the site is essential. A landing page is also included for branding purposes and allows site visitors to have a quick glance and understanding of the site.
+The content about cars is contributed by the public. Users can view the overview of the site on the main landing page. 
 
 #### Functional
-- Search function of all articles posted on its Country, City, Categories and/or Sub-categories
+- Search current car posting by name, feature, rating
 - Create new article function
-- Edit and Delete function on each article 
-- In order to exert control, registration/verification on email is included for actions performed on articles and collections
+- Edit and Delete each car posting 
+- Require to create account with email and login in order to edit car review. 
 
 #### Non-functional
-- Mobile responsiveness: Forms and search results display should not obstruct users' experience in the site
-- Accessibility: Colors used will not make it hard for users to make out the features of the app
-- Performance: Database may get larger and slower to load overtime, a loading screen is included to help bridge the gap between site and data loading
+- Mobile responsiveness: Able to navigate on the handphone and access website features
+- Accessibility: Clear readable font in specific size and color to enable concise communication. 
+- Performance: Ensure the website does not have jerky transition while data is loading and once it has been loaded. 
 
 ### Structure
 
-![Site-map](./src/Images/site_map.jpg)
+![Site-map]()
 
-Note: 
-Added a submission branch where users can verify their identity using his/her own email to access a list of articles he/she posted to do editing or deleting
 
 ### Skeleton
 Initial prototyping is seen here ![prototype1](./src/Images/wireframe1.jpg)![prototype2](./src/Images/wireframe2.jpg)
