@@ -4,6 +4,7 @@
         "name-of-model": "Vios 7",
         "year-of-launch": 2006,
         "brand": "Toyota",
+        "type": "SUV",
         "seats": 4,
         "color": "black",
         "land-terrain": "urban road",
@@ -13,16 +14,23 @@
         "description": "My favourite car to drive the family around",
         "still-in-production": true,
         "cost-price": 50000,
+        "reviews": [
+            {
+                "id": 4001,
+                "other-users-reviews": "Great post. I will buy this car."
+            },
+            {
+                "id": 4002,
+                "other-users-reviews": "Best review article. I agree."
+            }
+        ],
         "engine_performance_id": 2001,
         "comfort-features_id": [
             3001,
             3002,
             3003,
             3004,
-            3005,
             3006
-        ],
-        "type_id": 4001,
-        "reviews_id": 5001
+        ]
     }
 ]

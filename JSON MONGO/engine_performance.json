@@ -4,6 +4,12 @@
         "top-speed": "90kmh",
         "engine-power": "80kwH",
         "oil-consumption": "1l/H"
+    },
+    {
+        "_id": 2002,
+        "top-speed": "90kmh",
+        "engine-power": "230kwH",
+        "oil-consumption": "1l/H"
     }
     
 ]
