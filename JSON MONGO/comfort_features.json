@@ -1,26 +1,26 @@
 [
     {
         "_id": 3001,
-        "comfort-feature": "Blind Spot Monitoring"
+        "comfort_feature": "Blind Spot Monitoring"
     },
     {
         "_id": 3002,
-        "comfort-feature": "Premium Sound System"
+        "comfort_feature": "Premium Sound System"
     },
     {
         "_id": 3003,
-        "comfort-feature": "Wireless Connectivity"
+        "comfor_feature": "Wireless Connectivity"
     },
     {
         "_id": 3004,
-        "comfort-feature": "Digital Keys"
+        "comfort_feature": "Digital Keys"
     },
     {
         "_id": 3005,
-        "comfort-feature": "AI Bot Alexa Enabled"
+        "comfort_feature": "AI Bot Alexa Enabled"
     },
     {
         "_id": 3006,
-        "comfort-feature": "Ventilated Seats"
+        "comfort_feature": "Ventilated Seats"
     }
 ]

@@ -1,15 +1,15 @@
 [
     {
         "_id": 2001,
-        "top-speed": "90kmh",
-        "engine-power": "80kwH",
-        "oil-consumption": "1l/H"
+        "top_speed": "90kmh",
+        "engine_power": "80kwH",
+        "oil_consumption": "1l/H"
     },
     {
         "_id": 2002,
-        "top-speed": "90kmh",
-        "engine-power": "230kwH",
-        "oil-consumption": "1l/H"
+        "top_speed": "80kmh",
+        "engine_power": "230kwH",
+        "oil_consumption": "2l/H"
     }
     
 ]

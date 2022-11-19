@@ -1,36 +1,34 @@
 [
     {
         "_id": 1001,
-        "name-of-model": "Vios 7",
-        "year-of-launch": 2006,
+        "name_of_model": "Vios 7",
+        "year_of_launch": 2006,
         "brand": "Toyota",
         "type": "SUV",
         "seats": 4,
         "color": "black",
-        "land-terrain": "urban road",
+        "land_terrain": "urban road",
         "username": "Timothy Ho",
         "email": "timothy@gmail.com",
         "rating": 4,
         "description": "My favourite car to drive the family around",
-        "still-in-production": true,
-        "cost-price": 50000,
+        "still_in_production": true,
+        "cost_price": 50000,
         "reviews": [
             {
                 "id": 4001,
-                "other-users-reviews": "Great post. I will buy this car."
+                "other_users_reviews": "Great post. I will buy this car."
             },
             {
                 "id": 4002,
-                "other-users-reviews": "Best review article. I agree."
+                "other_users_reviews": "Best review article. I agree."
             }
         ],
         "engine_performance_id": 2001,
-        "comfort-features_id": [
+        "comfort_features_id": [
             3001,
-            3002,
             3003,
-            3004,
-            3006
+            3004
         ]
     }
 ]
