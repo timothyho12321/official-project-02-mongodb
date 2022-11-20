@@ -150,11 +150,17 @@ async function main() {
             let still_in_production = req.body.still_in_production;
             let cost_price = req.body.cost_price;
 
+
+
+            let engine_type_number = req.body.engine_type_number
             let top_speed = req.body.top_speed
             let engine_power = req.body.engine_power
             let oil_consumption = req.body.oil_consumption
 
-            // TO FILL IN SOME MORE
+            // Setting the tags of comfort feature in the body -
+            // take in ID as the value, not name 
+            let comfort_features_id = req.body.comfort_features
+
 
             // handle cases where description or food is falsely
             if (!name_of_model || !year_of_launch) {
@@ -192,6 +198,7 @@ async function main() {
             // INSERT NEW ENGINE FIRST THEN GET THE ID
 
             let engineNew = {
+                "engine_type_number": engine_type_number,
                 "top_speed": top_speed,
                 "engine_power": engine_power,
                 "oil_consumption": oil_consumption
@@ -201,31 +208,61 @@ async function main() {
 
             const db = MongoUtil.getDB();
 
-            const resultEngine = await db.collection("engine_performance").insertOne(engineNew);
+            // create search whether engine type number already exists
+            let haveEngine = null;
+
+            let engineCheck = {}
+            engineCheck["engine_type_number"] = {
+                '$regex': req.body.engine_type_number,
+                '$options': 'i'
+
+            }
+
+            haveEngine = await db.collection("engine_performance").find(engineCheck).toArray()
+            // console.log(haveEngine.length);
+
+
+            // Create new engine if does not exists
+            if (!haveEngine.length) {
+                const resultEngine = await db.collection("engine_performance").insertOne(engineNew);
+
+            }
+
+
 
 
             // FIND ID OF NEW ENGINE
             let criteria = {};
 
-// add to criteria if have matching string 
+            // add to criteria if have matching string 
             // if (req.body.top_speed) {
-                
+
             //     criteria['top_speed'] = {
             //         "$regex": req.body.top_speed,  
             //         "$options": "i"  
             //     }
             // }
 
+
+
+            if (req.body.engine_type_number) {
+
+                criteria['engine_type_number'] = {
+                    "$regex": req.body.engine_type_number,
+                    "$options": "i"
+                }
+            }
+
             if (req.body.top_speed) {
-                
+
                 criteria['top_speed'] = req.body.top_speed
             }
             if (req.body.engine_power) {
-                
+
                 criteria['engine_power'] = req.body.engine_power
             }
             if (req.body.oil_consumption) {
-                
+
                 criteria['oil_consumption'] = req.body.oil_consumption
             }
 
@@ -240,10 +277,31 @@ async function main() {
 
             // convert Engine ID to string 
             let engineIdToString = idNewEngine.toString();
-            
+
 
             // console.log(idNewEngine)
             console.log(engineIdToString);
+
+
+            // Pushing the comfort features id into an array to 
+            // include in the new car entity
+
+            // QUESTION TO DECIDE WHETHER TO CREATE OBJECT
+            // ID FOR EACH COMFORT FEATURE OR USE HARD CODED 
+            // ID ENTERED INTO THE ARRAY? 
+
+            let comfortFeaturesObjectIDArray = []
+
+
+            for (let tag of comfort_features_id) {
+                comfortFeaturesObjectIDArray.push(ObjectId(tag))
+            }
+
+            let comfortFeaturesTags = comfortFeaturesObjectIDArray
+
+
+
+
 
             let carNew = {
                 "name_of_model": name_of_model,
@@ -260,8 +318,11 @@ async function main() {
                 "still_in_production": still_in_production,
                 "cost_price": cost_price,
 
-                // put the ID above inside here
-                "engine_performance_id": engineIdToString
+                // add new engine ID to new car entry
+                "engine_performance_id": engineIdToString,
+
+                // add array of comfort features id to new car entry
+                "comfort_features_id": comfort_features_id
 
             }
 
@@ -282,18 +343,136 @@ async function main() {
     app.put('/car/:car_id', async function (req, res) {
         try {
 
-            let {
-                name_of_model, year_of_launch, brand
-                , type, seats, color, land_terrain
-                , username, email, rating, description
-                , still_in_production, cost_price
+            let name_of_model = req.body.name_of_model;
+            let year_of_launch = req.body.year_of_launch;
+            let brand = req.body.brand;
+            let type = req.body.type;
+            let seats = req.body.seats;
+            let color = req.body.color;
+            let land_terrain = req.body.land_terrain;
+            let username = req.body.username;
+            let email = req.body.email;
+            let rating = req.body.rating;
+            let description = req.body.description;
+            let still_in_production = req.body.still_in_production;
+            let cost_price = req.body.cost_price;
 
-            } = req.body;
+            let engine_type_number = req.body.engine_type_number
+            let top_speed = req.body.top_speed
+            let engine_power = req.body.engine_power
+            let oil_consumption = req.body.oil_consumption
+
+            // Setting the tags of comfort feature in the body -
+            // take in ID as the value, not name 
+            let comfort_features_id = req.body.comfort_features
+
+
+            let engineNew = {
+                "engine_type_number": engine_type_number,
+                "top_speed": top_speed,
+                "engine_power": engine_power,
+                "oil_consumption": oil_consumption
+
+            }
+
+
+            const db = MongoUtil.getDB();
+
+            // create search whether engine type number already exists
+            let haveEngine = null;
+
+            let engineCheck = {}
+            engineCheck["engine_type_number"] = {
+                '$regex': req.body.engine_type_number,
+                '$options': 'i'
+
+            }
+
+            haveEngine = await db.collection("engine_performance").find(engineCheck).toArray()
+            // console.log(haveEngine.length);
+
+
+            // Create new engine if does not exists
+            if (!haveEngine.length) {
+                const resultEngine = await db.collection("engine_performance").insertOne(engineNew);
+
+            }
+
+
+
+
+            // FIND ID OF NEW ENGINE
+            let criteria = {};
+
+            // add to criteria if have matching string 
+            // if (req.body.top_speed) {
+
+            //     criteria['top_speed'] = {
+            //         "$regex": req.body.top_speed,  
+            //         "$options": "i"  
+            //     }
+            // }
+
+
+
+            if (req.body.engine_type_number) {
+
+                criteria['engine_type_number'] = {
+                    "$regex": req.body.engine_type_number,
+                    "$options": "i"
+                }
+            }
+
+            if (req.body.top_speed) {
+
+                criteria['top_speed'] = req.body.top_speed
+            }
+            if (req.body.engine_power) {
+
+                criteria['engine_power'] = req.body.engine_power
+            }
+            if (req.body.oil_consumption) {
+
+                criteria['oil_consumption'] = req.body.oil_consumption
+            }
+
+
+
+            let newEngineArray = await MongoUtil.getDB().collection("engine_performance").find(criteria, {
+                // PROJECTION 
+                '_id': 1
+            }).toArray();
+
+            const idNewEngine = newEngineArray[0]._id
+
+            // convert Engine ID to string 
+            let engineIdToString = idNewEngine.toString();
+
+
+
+
             let modifiedDocument = {
-                name_of_model, year_of_launch, brand
-                , type, seats, color, land_terrain
-                , username, email, rating, description
-                , still_in_production, cost_price
+
+                "name_of_model": name_of_model,
+                "year_of_launch": year_of_launch,
+                "brand": brand,
+                "type": type,
+                "seats": seats,
+                "color": color,
+                "land_terrain": land_terrain,
+                "username": username,
+                "email": email,
+                "rating": rating,
+                "description": description,
+                "still_in_production": still_in_production,
+                "cost_price": cost_price,
+
+                // add new engine ID to new car entry
+                "engine_performance_id": engineIdToString,
+
+                // add array of comfort features id to new car entry
+                "comfort_features_id": comfort_features_id
+
 
             }
 
