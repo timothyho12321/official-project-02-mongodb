@@ -167,7 +167,7 @@ async function main() {
                 // can perform res.json, res.render or res.send once
             }
 
-// INSERTED BODY VALUES PUT DO NOT ADD THE LAST THREE 
+            // INSERTED BODY VALUES PUT DO NOT ADD THE LAST THREE 
             // {
             //     "name_of_model": name_of_model,
             //     "year_of_launch": year_of_launch,
@@ -182,9 +182,6 @@ async function main() {
             //     "description": description,
             //     "still_in_production": still_in_production,
             //     "cost_price": cost_price,
-
-                
-            //     "engine_performance_id": 1,
 
             //     "top_speed": top_speed,
             //     "engine_power": engine_power,
@@ -203,23 +200,35 @@ async function main() {
 
 
             const db = MongoUtil.getDB();
-            
+
             const resultEngine = await db.collection("engine_performance").insertOne(engineNew);
 
+
             // FIND ID OF NEW ENGINE
-
-
             let criteria = {};
 
+// add to criteria if have matching string 
+            // if (req.body.top_speed) {
+                
+            //     criteria['top_speed'] = {
+            //         "$regex": req.body.top_speed,  
+            //         "$options": "i"  
+            //     }
+            // }
 
             if (req.body.top_speed) {
-                // adding the 'description' key to the criteria object and assign req.query.description
-                // as the value
-                criteria['top_speed'] = {
-                    "$regex": req.body.top_speed,  // use regex expression search
-                    "$options": "i"  // ignore case
-                }
+                
+                criteria['top_speed'] = req.body.top_speed
             }
+            if (req.body.engine_power) {
+                
+                criteria['engine_power'] = req.body.engine_power
+            }
+            if (req.body.oil_consumption) {
+                
+                criteria['oil_consumption'] = req.body.oil_consumption
+            }
+
 
 
             let newEngineArray = await MongoUtil.getDB().collection("engine_performance").find(criteria, {
@@ -227,9 +236,14 @@ async function main() {
                 '_id': 1
             }).toArray();
 
-            //TAKE OUT TOARRAY?
+            const idNewEngine = newEngineArray[0]._id
 
-            console.log(newEngineArray);
+            // convert Engine ID to string 
+            let engineIdToString = idNewEngine.toString();
+            
+
+            // console.log(idNewEngine)
+            console.log(engineIdToString);
 
             let carNew = {
                 "name_of_model": name_of_model,
@@ -247,11 +261,11 @@ async function main() {
                 "cost_price": cost_price,
 
                 // put the ID above inside here
-                "engine_performance_id": 1
+                "engine_performance_id": engineIdToString
 
             }
 
-           
+
             const result = await db.collection("car").insertOne(carNew);
             res.status(200);  // set the status to 200, meaning "OK"
             res.send(result);
