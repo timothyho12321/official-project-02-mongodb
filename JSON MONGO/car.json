@@ -14,6 +14,12 @@
         "description": "My favourite car to drive the family around",
         "still_in_production": true,
         "cost_price": 50000,
+        "engine_performance_id": 2001,
+        "comfort_features_id": [
+            3001,
+            3003,
+            3004
+        ],
         "reviews": [
             {
                 "id": 4001,
@@ -23,12 +29,7 @@
                 "id": 4002,
                 "other_users_reviews": "Best review article. I agree."
             }
-        ],
-        "engine_performance_id": 2001,
-        "comfort_features_id": [
-            3001,
-            3003,
-            3004
         ]
+       
     }
 ]

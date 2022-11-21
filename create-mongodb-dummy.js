@@ -1,7 +1,7 @@
 //Code to insert data into mongodb
 
 db.car.insertOne({
-    
+
     "name_of_model": "Vios 7",
     "year_of_launch": 2006,
     "brand": "Toyota",
@@ -34,7 +34,7 @@ db.car.insertOne({
 })
 
 db.car.insertOne({
-    
+
     "name_of_model": "Vios 8",
     "year_of_launch": 2006,
     "brand": "Toyota",
@@ -67,7 +67,7 @@ db.car.insertOne({
 })
 
 db.car.insertOne({
-    
+
     "name_of_model": "Vios 9",
     "year_of_launch": 2006,
     "brand": "Toyota",
@@ -169,29 +169,26 @@ db.car.insertOne({
 })
 
 
-
 db.comfort_features.insertMany(
     [{
-        "_id": 3001,
         "comfort-feature": "Blind Spot Monitoring"
     }, {
-        "_id": 3002,
         "comfort-feature": "Premium Sound System"
     },
     {
-        "_id": 3003,
+
         "comfort-feature": "Wireless Connectivity"
     },
     {
-        "_id": 3004,
+
         "comfort-feature": "Digital Keys"
     },
     {
-        "_id": 3005,
+
         "comfort-feature": "AI Bot Alexa Enabled"
     },
     {
-        "_id": 3006,
+
         "comfort-feature": "Ventilated Seats"
     }]
 

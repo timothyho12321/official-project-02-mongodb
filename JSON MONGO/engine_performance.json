@@ -1,12 +1,14 @@
 [
     {
         "_id": 2001,
+        "engine_type_number": "BC46",
         "top_speed": "90kmh",
         "engine_power": "80kwH",
         "oil_consumption": "1l/H"
     },
     {
         "_id": 2002,
+        "engine_type_number": "PN33",
         "top_speed": "80kmh",
         "engine_power": "230kwH",
         "oil_consumption": "2l/H"
