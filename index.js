@@ -9,13 +9,18 @@ const { ObjectId } = require('mongodb');
 
 const MONGO_URI = process.env.MONGO_URI;
 
-
 const app = express();
 
+
+// IMPORT MIDDLEWARES AND VALIDATION
+const validation = require('./Middlewares/validationMiddleWare');
+const carPostSchema = require('./Validations/carPostValidation');
 
 app.use(express.json());
 
 app.use(cors());
+
+
 
 
 
@@ -31,7 +36,7 @@ async function main() {
     })
 
 
-    // EDIT THIS CONTINUE MONGO EXPRESS RESTFUL API
+    
     app.get('/car', async function (req, res) {
 
         console.log(req.query);
@@ -133,7 +138,7 @@ async function main() {
 
 
     // POST A NEW CAR WITH NEW ENGINE ATTEMPT
-    app.post('/newcarandengine', async function (req, res) {
+    app.post('/newcarandengine', validation(carPostSchema), async function (req, res) {
 
         try {
             let name_of_model = req.body.name_of_model;
