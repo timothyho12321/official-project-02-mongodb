@@ -275,20 +275,20 @@ async function main() {
 
             const idNewEngine = newEngineArray[0]._id
 
-            // convert Engine ID to string 
-            let engineIdToString = idNewEngine.toString();
-
-
-            // console.log(idNewEngine)
-            console.log(engineIdToString);
-
 
             // Pushing the comfort features id into an array to 
             // include in the new car entity
 
-            // QUESTION TO DECIDE WHETHER TO CREATE OBJECT
-            // ID FOR EACH COMFORT FEATURE OR USE HARD CODED 
-            // ID ENTERED INTO THE ARRAY? 
+
+            // CODE THE VALUE OF CHECKBOX FOR COMFORTFEATURE AS THE 
+            // OBJECTID IN MONGODB
+            // FOR RECORD
+            // ObjectId('637b79c39b9228988ebddfdd') - "Blind Spot Monitoring"
+            // ObjectId('637b79c39b9228988ebddfde') - "Premium Sound System"
+            // ObjectId('637b79c39b9228988ebddfdf') - "Wireless Connectivity"
+            // ObjectId('637b79c39b9228988ebddfe0') - "Digital Keys"
+            // ObjectId('637b79c39b9228988ebddfe1') - "AI Bot Alexa Enabled"
+            // ObjectId('637b79c39b9228988ebddfe2') - "Ventilated Seats"
 
             let comfortFeaturesObjectIDArray = []
 
@@ -319,11 +319,10 @@ async function main() {
                 "cost_price": cost_price,
 
                 // add new engine ID to new car entry
-                "engine_performance_id": engineIdToString,
+                "engine_performance_id": idNewEngine,
 
                 // add array of comfort features id to new car entry
-                "comfort_features_id": comfort_features_id
-
+                "comfort_features_id": comfortFeaturesTags
             }
 
 
