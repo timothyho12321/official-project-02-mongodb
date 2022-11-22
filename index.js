@@ -36,11 +36,11 @@ async function main() {
     })
 
 
-    
+
     app.get('/car', async function (req, res) {
 
-        console.log(req.query);
-        console.log("bunny");
+        //console.log("This is the query string ==> " , req.query);
+        //console.log("bunny");
 
         // query string are retrieved using req.query
         // console.log(req.query);
@@ -58,13 +58,40 @@ async function main() {
             }
         }
 
-        // if (req.query.food) {
-        //     criteria['food'] = {
-        //         "$in": [req.query.food]
-        //     }
-        // }
 
-        console.log(criteria);
+        if (req.query.type) {
+            // adding the 'description' key to the criteria object and assign req.query.description
+            // as the value
+            criteria['type'] = {
+                "$regex": req.query.type,  // use regex expression search
+                "$options": "i"  // ignore case
+            }
+        }
+
+
+        if (req.query.seats) {
+            // adding the 'description' key to the criteria object and assign req.query.description
+            // as the value
+            // console.log("This is query string seats ==> " , req.query.seats)
+            criteria["seats"] = {"$eq": parseInt(req.query.seats)} 
+
+
+        }
+
+        if (req.query.rating) {
+            // adding the 'description' key to the criteria object and assign req.query.description
+            // as the value
+            // console.log("This is query string seats ==> " , req.query.seats)
+            criteria["rating"] = {"$eq": parseInt(req.query.rating)} 
+
+            // criteria['seats'] = req.query.seats
+
+        }
+
+
+
+
+        // console.log(criteria);
 
         let results = await MongoUtil.getDB().collection("car").find(criteria).toArray();
         console.log(results);
@@ -140,6 +167,9 @@ async function main() {
     // POST A NEW CAR WITH NEW ENGINE ATTEMPT
     app.post('/newcarandengine', validation(carPostSchema), async function (req, res) {
 
+
+        // QUESTION WHY IS THERE AN ERROR [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client 
+        // CAN IT BE DUE TO VALIDATION?
         try {
             let name_of_model = req.body.name_of_model;
             let year_of_launch = req.body.year_of_launch;
