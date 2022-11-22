@@ -32,7 +32,7 @@ async function main() {
     app.get('/', function (req, res) {
 
         res.send("This is working yippee")
-        console.log("Warabi")
+        // console.log("Warabi")
     })
 
 
@@ -73,7 +73,7 @@ async function main() {
             // adding the 'description' key to the criteria object and assign req.query.description
             // as the value
             // console.log("This is query string seats ==> " , req.query.seats)
-            criteria["seats"] = {"$eq": parseInt(req.query.seats)} 
+            criteria["seats"] = { "$eq": parseInt(req.query.seats) }
 
 
         }
@@ -82,19 +82,75 @@ async function main() {
             // adding the 'description' key to the criteria object and assign req.query.description
             // as the value
             // console.log("This is query string seats ==> " , req.query.seats)
-            criteria["rating"] = {"$eq": parseInt(req.query.rating)} 
+            criteria["rating"] = { "$eq": parseInt(req.query.rating) }
 
             // criteria['seats'] = req.query.seats
+
+        }
+
+        // console.log(criteria);
+
+
+
+
+
+
+
+        let results = await MongoUtil.getDB().collection("car").find(criteria).toArray();
+        console.log(results);
+
+
+        // RENAME THE ENGINE ID SENT BACK AS RESULTS TO THE NAME OF THE ENGINE
+        for (let eachcar of results) {
+
+            let searchIDForEngine = eachcar.engine_performance_id
+            // console.log(searchIDForEngine);
+
+            let arrayOfEngineByCarSearch = await MongoUtil.getDB().collection("engine_performance").find(
+                { _id: ObjectId(searchIDForEngine) }
+
+
+            ).toArray();
+            // console.log(arrayOfEngineByCarSearch);
+            let nameOfEngineByCarSearch = arrayOfEngineByCarSearch[0].engine_type_number;
+            // console.log(nameOfEngineByCarSearch);
+            // SET THE RETURN OF THE ENGINE PERFORMANCEC TO NAME OF ENGINE
+
+            eachcar.engine_performance_id = nameOfEngineByCarSearch
+
+        }
+
+        // RENAME THE COMFORT FEATURES (CF) TAGS ID SENT BACK AS RESULTS TO THE NAME OF THE TAGS
+        for (let eachcar of results) {
+
+            let searchIDForCFTags = eachcar.comfort_features_id
+            // console.log(searchIDForCFTags);
+            //searchIDForTags is an array of comfort features tags
+
+            let nameForCFTags = []
+            for (let eachCF of searchIDForCFTags) {
+                let arrayOfCF = await MongoUtil.getDB().collection("comfort_features").find(
+                    { _id: ObjectId(eachCF) }
+
+
+                ).toArray();
+                console.log("Each CF Search", arrayOfCF)
+
+                let getNameFromEachCFArray = arrayOfCF[0].comfort_feature
+                // console.log(getNameFromEachCFArray);
+
+                nameForCFTags.push(getNameFromEachCFArray);
+            }
+            // console.log(nameForCFTags);
+            // SET THE RETURN OF THE COMFORT FEATURES TO ARRAY OF NAME OF COMFORT FEATURES
+            eachcar.comfort_features_id = nameForCFTags
 
         }
 
 
 
 
-        // console.log(criteria);
 
-        let results = await MongoUtil.getDB().collection("car").find(criteria).toArray();
-        console.log(results);
         res.status(200);
         res.json(results);  // send the results back as JSON
 
@@ -373,6 +429,118 @@ async function main() {
 
 
     // UPDATE
+
+
+    // ROUTE TO GET ALL POST FROM A USER FROM THEIR EMAIL 
+    app.get("/getposts", async (req, res) => {
+        let emailAccepted = false;
+        let getEmail = false;
+
+        let criteria = {};
+
+        // CHECK IF AN ACCEPTABLE FORMAT OF EMAIL IS KEYED IN
+        if (req.query.email.includes("@") && req.query.email.includes(".")) {
+            console.log("Email accepted")
+            emailAccepted = true;
+            if (req.query.email) {
+                getEmail = true
+            }
+        } else {
+            res.send("Key in a proper email addresss.")
+            return;
+        }
+
+        if (getEmail) {
+            criteria["email"] = {
+                "$regex": req.query.email,
+                "$options": "i"
+            }
+
+            // result is all posts of the user identified by email keyed in
+            let result = await MongoUtil.getDB().collection("car").find(criteria).toArray();
+
+
+            // THINK ABOUT WHETHER WANT TO DISPLAY ENGINE AND COMFORT FEATURES IN ALL RESULTS 
+            // console.log(result);
+            res.status(200);
+            res.send(result)
+
+        }
+
+
+
+    })
+
+
+
+
+    // ROUTE TO GET DETAILS OF ONE POST FROM A USER BY the POST ID  
+
+    app.get('/car/:id', async function (req, res) {
+
+        // to build a search engine, we an empty criteria object (that means we want all the documents)
+
+
+        let result = await MongoUtil.getDB().collection("car").find({
+            "_id": ObjectId(req.params.id)
+
+        }).toArray();
+        console.log(result);
+
+        // CONSIDER REFACTORING INTO FUNCTION 
+        for (let eachcar of result) {
+
+            let searchIDForEngine = eachcar.engine_performance_id
+            // console.log(searchIDForEngine);
+
+            let arrayOfEngineByCarSearch = await MongoUtil.getDB().collection("engine_performance").find(
+                { _id: ObjectId(searchIDForEngine) }
+
+
+            ).toArray();
+            // console.log(arrayOfEngineByCarSearch);
+            let nameOfEngineByCarSearch = arrayOfEngineByCarSearch[0].engine_type_number;
+            // console.log(nameOfEngineByCarSearch);
+            // SET THE RETURN OF THE ENGINE PERFORMANCEC TO NAME OF ENGINE
+
+            eachcar.engine_performance_id = nameOfEngineByCarSearch
+
+        }
+
+        for (let eachcar of result) {
+
+            let searchIDForCFTags = eachcar.comfort_features_id
+            // console.log(searchIDForCFTags);
+            //searchIDForTags is an array of comfort features tags
+
+            let nameForCFTags = []
+            for (let eachCF of searchIDForCFTags) {
+                let arrayOfCF = await MongoUtil.getDB().collection("comfort_features").find(
+                    { _id: ObjectId(eachCF) }
+
+
+                ).toArray();
+                console.log("Each CF Search", arrayOfCF)
+
+                let getNameFromEachCFArray = arrayOfCF[0].comfort_feature
+                // console.log(getNameFromEachCFArray);
+
+                nameForCFTags.push(getNameFromEachCFArray);
+            }
+            // console.log(nameForCFTags);
+            // SET THE RETURN OF THE COMFORT FEATURES TO ARRAY OF NAME OF COMFORT FEATURES
+            eachcar.comfort_features_id = nameForCFTags
+
+        }
+
+
+
+        res.send(result);
+
+    }
+
+    )
+
 
     app.put('/car/:car_id', async function (req, res) {
         try {
