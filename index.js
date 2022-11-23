@@ -224,8 +224,6 @@ async function main() {
     app.post('/newcarandengine', validation(carPostSchema), async function (req, res) {
 
 
-        // QUESTION WHY IS THERE AN ERROR [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client 
-        // CAN IT BE DUE TO VALIDATION?
         try {
             let name_of_model = req.body.name_of_model;
             let year_of_launch = req.body.year_of_launch;
@@ -428,12 +426,19 @@ async function main() {
     })
 
 
+    /*--------------------------------------------- END OF POST -------------------------------------------*/
+
+    /*--------------------------------------------- START OF PUT -------------------------------------------*/
+
+
     // UPDATE
 
 
     // ROUTE TO GET ALL POST FROM A USER FROM THEIR EMAIL 
     app.get("/getposts", async (req, res) => {
         let emailAccepted = false;
+
+        //getEmail means there is an actual user with this email in Mongodb
         let getEmail = false;
 
         let criteria = {};
@@ -442,7 +447,17 @@ async function main() {
         if (req.query.email.includes("@") && req.query.email.includes(".")) {
             console.log("Email accepted")
             emailAccepted = true;
-            if (req.query.email) {
+
+            let searchEmailCriteria = {};
+            searchEmailCriteria["email"] = {
+                "$regex": req.query.email,
+                "$options": "i"
+            }
+            let resultEmailExist = await MongoUtil.getDB().collection("car").find(searchEmailCriteria).toArray();
+
+            if (resultEmailExist.length) {
+
+
                 getEmail = true
             }
         } else {
@@ -464,6 +479,11 @@ async function main() {
             // console.log(result);
             res.status(200);
             res.send(result)
+
+        } else {
+            res.status(401)
+            res.send("Such user email does not exist")
+            return;
 
         }
 
