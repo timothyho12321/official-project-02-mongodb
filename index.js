@@ -241,7 +241,6 @@ async function main() {
             let description = req.body.description;
             let cost_price = req.body.cost_price;
             let image = req.body.image;
-
             
             let engine_name = req.body.engine_name
             let top_speed = req.body.top_speed
@@ -562,7 +561,7 @@ async function main() {
     )
 
 
-    app.put('/car/:car_id', async function (req, res) {
+    app.put('/car/:car_id', validation(carPostSchema), async function (req, res) {
         try {
 
             let name_of_model = req.body.name_of_model;
