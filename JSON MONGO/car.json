@@ -6,15 +6,18 @@
         "brand": "Toyota",
         "type": "SUV",
         "seats": 4,
-        "color": "black",
         "land_terrain": "urban road",
         "username": "Timothy Ho",
         "email": "timothy@gmail.com",
         "rating": 4,
         "description": "My favourite car to drive the family around",
-        "still_in_production": true,
         "cost_price": 50000,
-        "engine_performance_id": 2001,
+        "image": "",
+        "color": {
+            "name": "black",
+            "shade": "shiny"
+        },
+        "engine_id": 2001,
         "comfort_features_id": [
             3001,
             3003,
@@ -30,6 +33,5 @@
                 "other_users_reviews": "Best review article. I agree."
             }
         ]
-       
     }
 ]
