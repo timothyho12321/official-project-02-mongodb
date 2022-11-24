@@ -6,6 +6,10 @@
         "brand": "Toyota",
         "type": "SUV",
         "seats": 4,
+        "color": {
+            "name": "black",
+            "shade": "shiny"
+        },
         "land_terrain": "urban road",
         "username": "Timothy Ho",
         "email": "timothy@gmail.com",
@@ -13,10 +17,6 @@
         "description": "My favourite car to drive the family around",
         "cost_price": 50000,
         "image": "",
-        "color": {
-            "name": "black",
-            "shade": "shiny"
-        },
         "engine_id": 2001,
         "comfort_features_id": [
             3001,
