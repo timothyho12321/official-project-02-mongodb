@@ -71,11 +71,11 @@ async function main() {
         }
 
 
-        if (req.query.seats) {
+        if (req.query.cost_price) {
             // adding the 'description' key to the criteria object and assign req.query.description
             // as the value
             // console.log("This is query string seats ==> " , req.query.seats)
-            criteria["seats"] = { "$eq": parseInt(req.query.seats) }
+            criteria["cost_price"] = { "$lte": parseInt(req.query.cost_price) }
 
 
         }
@@ -90,7 +90,7 @@ async function main() {
 
         }
 
-        // console.log(criteria);
+        console.log(criteria);
 
 
 
@@ -126,24 +126,26 @@ async function main() {
         for (let eachcar of results) {
 
             let searchIDForCFTags = eachcar.comfort_features_id
-            // console.log(searchIDForCFTags);
+            // console.log("Step 1", searchIDForCFTags);
             //searchIDForTags is an array of comfort features tags
 
             let nameForCFTags = []
             for (let eachCF of searchIDForCFTags) {
+                // console.log("Step 2", eachCF)
                 let arrayOfCF = await MongoUtil.getDB().collection("comfort_features").find(
                     { _id: ObjectId(eachCF) }
-
-
                 ).toArray();
-                // console.log("Each CF Search", arrayOfCF)
+                // console.log("Step 3", arrayOfCF)
+
+                let selectFirstZero = arrayOfCF[0]
+                // console.log("Step 4 [0]",selectFirstZero);
 
                 let getNameFromEachCFArray = arrayOfCF[0].comfort_feature
                 // console.log(getNameFromEachCFArray);
 
                 nameForCFTags.push(getNameFromEachCFArray);
             }
-            // console.log(nameForCFTags);
+            // console.log("Step 5", nameForCFTags);
             // SET THE RETURN OF THE COMFORT FEATURES TO ARRAY OF NAME OF COMFORT FEATURES
             eachcar.comfort_features_id = nameForCFTags
 
@@ -241,7 +243,7 @@ async function main() {
             let description = req.body.description;
             let cost_price = req.body.cost_price;
             let image = req.body.image;
-            
+
             let engine_name = req.body.engine_name
             let top_speed = req.body.top_speed
             let engine_power = req.body.engine_power
@@ -252,14 +254,13 @@ async function main() {
             let comfort_features_id = req.body.comfort_features
 
 
-            // handle cases where description or food is falsely
             if (!name_of_model || !year_of_launch) {
                 // they don't end the route function
                 res.status(400);
                 res.json({
                     'error': 'Things must be filled in'
                 })
-                return; // we must explictly return because a route
+                return; // explictly return because a route
                 // can perform res.json, res.render or res.send once
             }
 
