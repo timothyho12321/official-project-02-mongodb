@@ -41,11 +41,7 @@ async function main() {
 
     app.get('/car', async function (req, res) {
 
-        //console.log("This is the query string ==> " , req.query);
-        //console.log("bunny");
-
-        // query string are retrieved using req.query
-        // console.log(req.query);
+       
 
         // to build a search engine, we an empty criteria object (that means we want all the documents)
         let criteria = {};
@@ -70,7 +66,14 @@ async function main() {
             }
         }
 
+        if (req.query.year_of_launch) {
+            // adding the 'description' key to the criteria object and assign req.query.description
+            // as the value
+            // console.log("This is query string seats ==> " , req.query.seats)
+            criteria["year_of_launch"] = { "$gte": parseInt(req.query.year_of_launch) }
 
+
+        }
         if (req.query.cost_price) {
             // adding the 'description' key to the criteria object and assign req.query.description
             // as the value
@@ -125,6 +128,7 @@ async function main() {
         // RENAME THE COMFORT FEATURES (CF) TAGS ID SENT BACK AS RESULTS TO THE NAME OF THE TAGS
         for (let eachcar of results) {
 
+            // console.log("Step 0", eachcar);
             let searchIDForCFTags = eachcar.comfort_features_id
             // console.log("Step 1", searchIDForCFTags);
             //searchIDForTags is an array of comfort features tags
@@ -158,69 +162,28 @@ async function main() {
         res.status(200);
         res.json(results);  // send the results back as JSON
 
+
+
+
+
     })
 
 
+    ///////////////////////// GET ROUTE FOR CURRENTENGINESDB /////////////////////////////////////////
+   
+   
+    app.get('/engine', async function (req, res) {
 
-    // TO DELETE
-    // POST FIRST GENERIC ATTEMPT 
+        let criteria = {}
 
-    // app.post('/car', async function (req, res) {
+        let results = await MongoUtil.getDB().collection("engine").find(criteria).toArray();
+        console.log(results);
 
-    //     try {
-    //         let name_of_model = req.body.name_of_model;
-    //         let year_of_launch = req.body.year_of_launch;
-    //         let brand = req.body.brand;
-    //         let type = req.body.type;
-    //         let seats = req.body.seats;
-    //         let color = req.body.color;
-    //         let land_terrain = req.body.land_terrain;
-    //         let username = req.body.username;
-    //         let email = req.body.email;
-    //         let rating = req.body.rating;
-    //         let description = req.body.description;
-    //          let cost_price = req.body.cost_price;
+        res.json(results)
 
-    //         // TO FILL IN SOME MORE
+    })
 
-    //         // handle cases where description or food is falsely
-    //         if (!name_of_model || !year_of_launch) {
-    //             // they don't end the route function
-    //             res.status(400);
-    //             res.json({
-    //                 'error': 'Things must be filled in'
-    //             })
-    //             return; // we must explictly return because a route
-    //             // can perform res.json, res.render or res.send once
-    //         }
-
-
-    //         let carNew = {
-    //             "name_of_model": name_of_model,
-    //             "year_of_launch": year_of_launch,
-    //             "brand": brand,
-    //             "type": type,
-    //             "seats": seats,
-    //             "color": color,
-    //             "land_terrain": land_terrain,
-    //             "username": username,
-    //             "email": email,
-    //             "rating": rating,
-    //             "description": description,
-    //            "cost_price": cost_price
-
-    //         }
-
-    //         const db = MongoUtil.getDB();
-    //         const result = await db.collection("car").insertOne(carNew);
-    //         res.status(200);  // set the status to 200, meaning "OK"
-    //         res.send(result);
-    //     } catch (e) {
-    //         console.log(e);
-    //         res.status(500);
-    //     }
-
-    // })
+   
 
     /*--------------------------------------------- START OF POST -------------------------------------------*/
 
@@ -235,6 +198,7 @@ async function main() {
             let brand = req.body.brand;
             let type = req.body.type;
             let seats = req.body.seats;
+            // KEY INTO PARAMS AS OBJECT IN FRONT END FOR COLOR (NAME AND SHADE)
             let color = req.body.color;
             let land_terrain = req.body.land_terrain;
             let username = req.body.username;
@@ -251,7 +215,7 @@ async function main() {
 
             // Setting the tags of comfort feature in the body -
             // take in ID as the value, not name 
-            let comfort_features_id = req.body.comfort_features
+            let comfort_features_id = req.body.comfort_features_id
 
 
             if (!name_of_model || !year_of_launch) {
@@ -586,7 +550,7 @@ async function main() {
 
             // Setting the tags of comfort feature in the body -
             // take in ID as the value, not name 
-            let comfort_features_id = req.body.comfort_features
+            let comfort_features_id = req.body.comfort_features_id
 
 
             let engineNew = {
