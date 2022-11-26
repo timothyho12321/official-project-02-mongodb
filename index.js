@@ -9,13 +9,18 @@ const { ObjectId } = require('mongodb');
 
 const MONGO_URI = process.env.MONGO_URI;
 
-
 const app = express();
 
+
+// IMPORT MIDDLEWARES AND VALIDATION
+const validation = require('./Middlewares/validationMiddleWare');
+const carPostSchema = require('./Validations/carPostValidation');
 
 app.use(express.json());
 
 app.use(cors());
+
+
 
 
 
@@ -27,18 +32,16 @@ async function main() {
     app.get('/', function (req, res) {
 
         res.send("This is working yippee")
-        console.log("Warabi")
+        // console.log("Warabi")
     })
 
+    /*--------------------------------------------- START OF GET -------------------------------------------*/
 
-    // EDIT THIS CONTINUE MONGO EXPRESS RESTFUL API
+
+
     app.get('/car', async function (req, res) {
 
-        console.log(req.query);
-        console.log("bunny");
-
-        // query string are retrieved using req.query
-        // console.log(req.query);
+       
 
         // to build a search engine, we an empty criteria object (that means we want all the documents)
         let criteria = {};
@@ -53,26 +56,141 @@ async function main() {
             }
         }
 
-        // if (req.query.food) {
-        //     criteria['food'] = {
-        //         "$in": [req.query.food]
-        //     }
-        // }
+
+        if (req.query.type) {
+            // adding the 'description' key to the criteria object and assign req.query.description
+            // as the value
+            criteria['type'] = {
+                "$regex": req.query.type,  // use regex expression search
+                "$options": "i"  // ignore case
+            }
+        }
+
+        if (req.query.year_of_launch) {
+            // adding the 'description' key to the criteria object and assign req.query.description
+            // as the value
+            // console.log("This is query string seats ==> " , req.query.seats)
+            criteria["year_of_launch"] = { "$gte": parseInt(req.query.year_of_launch) }
+
+
+        }
+        if (req.query.cost_price) {
+            // adding the 'description' key to the criteria object and assign req.query.description
+            // as the value
+            // console.log("This is query string seats ==> " , req.query.seats)
+            criteria["cost_price"] = { "$lte": parseInt(req.query.cost_price) }
+
+
+        }
+
+        if (req.query.rating) {
+            // adding the 'description' key to the criteria object and assign req.query.description
+            // as the value
+            // console.log("This is query string seats ==> " , req.query.seats)
+            criteria["rating"] = { "$eq": parseInt(req.query.rating) }
+
+            // criteria['seats'] = req.query.seats
+
+        }
 
         console.log(criteria);
 
+
+
+
+
+
+
         let results = await MongoUtil.getDB().collection("car").find(criteria).toArray();
         console.log(results);
+
+
+        // RENAME THE ENGINE ID SENT BACK AS RESULTS TO THE NAME OF THE ENGINE
+        for (let eachcar of results) {
+
+            let searchIDForEngine = eachcar.engine_id
+            // console.log(searchIDForEngine);
+
+            let arrayOfEngineByCarSearch = await MongoUtil.getDB().collection("engine").find(
+                { _id: ObjectId(searchIDForEngine) }
+
+
+            ).toArray();
+            // console.log(arrayOfEngineByCarSearch);
+            let nameOfEngineByCarSearch = arrayOfEngineByCarSearch[0].engine_name;
+            // console.log(nameOfEngineByCarSearch);
+            // SET THE RETURN OF THE ENGINE PERFORMANCEC TO NAME OF ENGINE
+
+            eachcar.engine_id = nameOfEngineByCarSearch
+
+        }
+
+        // RENAME THE COMFORT FEATURES (CF) TAGS ID SENT BACK AS RESULTS TO THE NAME OF THE TAGS
+        for (let eachcar of results) {
+
+            // console.log("Step 0", eachcar);
+            let searchIDForCFTags = eachcar.comfort_features_id
+            // console.log("Step 1", searchIDForCFTags);
+            //searchIDForTags is an array of comfort features tags
+
+            let nameForCFTags = []
+            for (let eachCF of searchIDForCFTags) {
+                // console.log("Step 2", eachCF)
+                let arrayOfCF = await MongoUtil.getDB().collection("comfort_features").find(
+                    { _id: ObjectId(eachCF) }
+                ).toArray();
+                // console.log("Step 3", arrayOfCF)
+
+                let selectFirstZero = arrayOfCF[0]
+                // console.log("Step 4 [0]",selectFirstZero);
+
+                let getNameFromEachCFArray = arrayOfCF[0].comfort_feature
+                // console.log(getNameFromEachCFArray);
+
+                nameForCFTags.push(getNameFromEachCFArray);
+            }
+            // console.log("Step 5", nameForCFTags);
+            // SET THE RETURN OF THE COMFORT FEATURES TO ARRAY OF NAME OF COMFORT FEATURES
+            eachcar.comfort_features_id = nameForCFTags
+
+        }
+
+
+
+
+
         res.status(200);
         res.json(results);  // send the results back as JSON
 
+
+
+
+
     })
 
 
+    ///////////////////////// GET ROUTE FOR CURRENTENGINESDB /////////////////////////////////////////
+   
+   
+    app.get('/engine', async function (req, res) {
 
-    // POST FIRST GENERIC ATTEMPT 
+        let criteria = {}
 
-    app.post('/car', async function (req, res) {
+        let results = await MongoUtil.getDB().collection("engine").find(criteria).toArray();
+        console.log(results);
+
+        res.json(results)
+
+    })
+
+   
+
+    /*--------------------------------------------- START OF POST -------------------------------------------*/
+
+
+    // POST A NEW CAR WITH NEW ENGINE 
+    app.post('/newcarandengine', validation(carPostSchema), async function (req, res) {
+
 
         try {
             let name_of_model = req.body.name_of_model;
@@ -80,96 +198,33 @@ async function main() {
             let brand = req.body.brand;
             let type = req.body.type;
             let seats = req.body.seats;
+            // KEY INTO PARAMS AS OBJECT IN FRONT END FOR COLOR (NAME AND SHADE)
             let color = req.body.color;
             let land_terrain = req.body.land_terrain;
             let username = req.body.username;
             let email = req.body.email;
             let rating = req.body.rating;
             let description = req.body.description;
-            let still_in_production = req.body.still_in_production;
             let cost_price = req.body.cost_price;
+            let image = req.body.image;
 
-            // TO FILL IN SOME MORE
-
-            // handle cases where description or food is falsely
-            if (!name_of_model || !year_of_launch) {
-                // they don't end the route function
-                res.status(400);
-                res.json({
-                    'error': 'Things must be filled in'
-                })
-                return; // we must explictly return because a route
-                // can perform res.json, res.render or res.send once
-            }
-
-
-            let carNew = {
-                "name_of_model": name_of_model,
-                "year_of_launch": year_of_launch,
-                "brand": brand,
-                "type": type,
-                "seats": seats,
-                "color": color,
-                "land_terrain": land_terrain,
-                "username": username,
-                "email": email,
-                "rating": rating,
-                "description": description,
-                "still_in_production": still_in_production,
-                "cost_price": cost_price
-
-            }
-
-            const db = MongoUtil.getDB();
-            const result = await db.collection("car").insertOne(carNew);
-            res.status(200);  // set the status to 200, meaning "OK"
-            res.send(result);
-        } catch (e) {
-            console.log(e);
-            res.status(500);
-        }
-
-    })
-
-
-    // POST A NEW CAR WITH NEW ENGINE ATTEMPT
-    app.post('/newcarandengine', async function (req, res) {
-
-        try {
-            let name_of_model = req.body.name_of_model;
-            let year_of_launch = req.body.year_of_launch;
-            let brand = req.body.brand;
-            let type = req.body.type;
-            let seats = req.body.seats;
-            let color = req.body.color;
-            let land_terrain = req.body.land_terrain;
-            let username = req.body.username;
-            let email = req.body.email;
-            let rating = req.body.rating;
-            let description = req.body.description;
-            let still_in_production = req.body.still_in_production;
-            let cost_price = req.body.cost_price;
-
-
-
-            let engine_type_number = req.body.engine_type_number
+            let engine_name = req.body.engine_name
             let top_speed = req.body.top_speed
             let engine_power = req.body.engine_power
             let oil_consumption = req.body.oil_consumption
 
             // Setting the tags of comfort feature in the body -
             // take in ID as the value, not name 
-            let comfort_features_id = req.body.comfort_features
+            let comfort_features_id = req.body.comfort_features_id
 
 
-            // handle cases where description or food is falsely
             if (!name_of_model || !year_of_launch) {
                 // they don't end the route function
                 res.status(400);
                 res.json({
                     'error': 'Things must be filled in'
                 })
-                return; // we must explictly return because a route
+                return; // explictly return because a route
                 // can perform res.json, res.render or res.send once
             }
 
@@ -186,7 +241,6 @@ async function main() {
             //     "email": email,
             //     "rating": rating,
             //     "description": description,
-            //     "still_in_production": still_in_production,
             //     "cost_price": cost_price,
 
             //     "top_speed": top_speed,
@@ -198,7 +252,7 @@ async function main() {
             // INSERT NEW ENGINE FIRST THEN GET THE ID
 
             let engineNew = {
-                "engine_type_number": engine_type_number,
+                "engine_name": engine_name,
                 "top_speed": top_speed,
                 "engine_power": engine_power,
                 "oil_consumption": oil_consumption
@@ -212,19 +266,19 @@ async function main() {
             let haveEngine = null;
 
             let engineCheck = {}
-            engineCheck["engine_type_number"] = {
-                '$regex': req.body.engine_type_number,
+            engineCheck["engine_name"] = {
+                '$regex': req.body.engine_name,
                 '$options': 'i'
 
             }
 
-            haveEngine = await db.collection("engine_performance").find(engineCheck).toArray()
+            haveEngine = await db.collection("engine").find(engineCheck).toArray()
             // console.log(haveEngine.length);
 
 
             // Create new engine if does not exists
             if (!haveEngine.length) {
-                const resultEngine = await db.collection("engine_performance").insertOne(engineNew);
+                const resultEngine = await db.collection("engine").insertOne(engineNew);
 
             }
 
@@ -245,10 +299,10 @@ async function main() {
 
 
 
-            if (req.body.engine_type_number) {
+            if (req.body.engine_name) {
 
-                criteria['engine_type_number'] = {
-                    "$regex": req.body.engine_type_number,
+                criteria['engine_name'] = {
+                    "$regex": req.body.engine_name,
                     "$options": "i"
                 }
             }
@@ -268,7 +322,7 @@ async function main() {
 
 
 
-            let newEngineArray = await MongoUtil.getDB().collection("engine_performance").find(criteria, {
+            let newEngineArray = await MongoUtil.getDB().collection("engine").find(criteria, {
                 // PROJECTION 
                 '_id': 1
             }).toArray();
@@ -315,11 +369,10 @@ async function main() {
                 "email": email,
                 "rating": rating,
                 "description": description,
-                "still_in_production": still_in_production,
                 "cost_price": cost_price,
-
+                "image": image,
                 // add new engine ID to new car entry
-                "engine_performance_id": idNewEngine,
+                "engine_id": idNewEngine,
 
                 // add array of comfort features id to new car entry
                 "comfort_features_id": comfortFeaturesTags
@@ -337,9 +390,143 @@ async function main() {
     })
 
 
+    /*--------------------------------------------- END OF POST -------------------------------------------*/
+
+    /*--------------------------------------------- START OF PUT -------------------------------------------*/
+
+
     // UPDATE
 
-    app.put('/car/:car_id', async function (req, res) {
+
+    // ROUTE TO GET ALL POST FROM A USER FROM THEIR EMAIL 
+    app.get("/getposts", async (req, res) => {
+        let emailAccepted = false;
+
+        //getEmail means there is an actual user with this email in Mongodb
+        let getEmail = false;
+
+        let criteria = {};
+
+        // CHECK IF AN ACCEPTABLE FORMAT OF EMAIL IS KEYED IN
+        if (req.query.email.includes("@") && req.query.email.includes(".")) {
+            console.log("Email accepted")
+            emailAccepted = true;
+
+            let searchEmailCriteria = {};
+            searchEmailCriteria["email"] = {
+                "$regex": req.query.email,
+                "$options": "i"
+            }
+            let resultEmailExist = await MongoUtil.getDB().collection("car").find(searchEmailCriteria).toArray();
+
+            if (resultEmailExist.length) {
+
+
+                getEmail = true
+            }
+        } else {
+            res.send("Key in a proper email addresss.")
+            return;
+        }
+
+        if (getEmail) {
+            criteria["email"] = {
+                "$regex": req.query.email,
+                "$options": "i"
+            }
+
+            // result is all posts of the user identified by email keyed in
+            let result = await MongoUtil.getDB().collection("car").find(criteria).toArray();
+
+
+            // THINK ABOUT WHETHER WANT TO DISPLAY ENGINE AND COMFORT FEATURES IN ALL RESULTS 
+            // console.log(result);
+            res.status(200);
+            res.send(result)
+
+        } else {
+            res.status(401)
+            res.send("Such user email does not exist")
+            return;
+
+        }
+
+
+
+    })
+
+
+
+
+    // ROUTE TO GET DETAILS OF ONE POST FROM A USER BY the POST ID  
+
+    app.get('/car/:id', async function (req, res) {
+
+        // to build a search engine, we an empty criteria object (that means we want all the documents)
+
+
+        let result = await MongoUtil.getDB().collection("car").find({
+            "_id": ObjectId(req.params.id)
+
+        }).toArray();
+        console.log(result);
+
+        // CONSIDER REFACTORING INTO FUNCTION 
+        for (let eachcar of result) {
+
+            let searchIDForEngine = eachcar.engine_id
+            // console.log(searchIDForEngine);
+
+            let arrayOfEngineByCarSearch = await MongoUtil.getDB().collection("engine").find(
+                { _id: ObjectId(searchIDForEngine) }
+
+
+            ).toArray();
+            // console.log(arrayOfEngineByCarSearch);
+            let nameOfEngineByCarSearch = arrayOfEngineByCarSearch[0].engine_name;
+            // console.log(nameOfEngineByCarSearch);
+            // SET THE RETURN OF THE ENGINE PERFORMANCEC TO NAME OF ENGINE
+
+            eachcar.engine_id = nameOfEngineByCarSearch
+
+        }
+
+        for (let eachcar of result) {
+
+            let searchIDForCFTags = eachcar.comfort_features_id
+            // console.log(searchIDForCFTags);
+            //searchIDForTags is an array of comfort features tags
+
+            let nameForCFTags = []
+            for (let eachCF of searchIDForCFTags) {
+                let arrayOfCF = await MongoUtil.getDB().collection("comfort_features").find(
+                    { _id: ObjectId(eachCF) }
+
+
+                ).toArray();
+                console.log("Each CF Search", arrayOfCF)
+
+                let getNameFromEachCFArray = arrayOfCF[0].comfort_feature
+                // console.log(getNameFromEachCFArray);
+
+                nameForCFTags.push(getNameFromEachCFArray);
+            }
+            // console.log(nameForCFTags);
+            // SET THE RETURN OF THE COMFORT FEATURES TO ARRAY OF NAME OF COMFORT FEATURES
+            eachcar.comfort_features_id = nameForCFTags
+
+        }
+
+
+
+        res.send(result);
+
+    }
+
+    )
+
+
+    app.put('/car/:car_id', validation(carPostSchema), async function (req, res) {
         try {
 
             let name_of_model = req.body.name_of_model;
@@ -353,21 +540,21 @@ async function main() {
             let email = req.body.email;
             let rating = req.body.rating;
             let description = req.body.description;
-            let still_in_production = req.body.still_in_production;
             let cost_price = req.body.cost_price;
+            let image = req.body.image;
 
-            let engine_type_number = req.body.engine_type_number
+            let engine_name = req.body.engine_name
             let top_speed = req.body.top_speed
             let engine_power = req.body.engine_power
             let oil_consumption = req.body.oil_consumption
 
             // Setting the tags of comfort feature in the body -
             // take in ID as the value, not name 
-            let comfort_features_id = req.body.comfort_features
+            let comfort_features_id = req.body.comfort_features_id
 
 
             let engineNew = {
-                "engine_type_number": engine_type_number,
+                "engine_name": engine_name,
                 "top_speed": top_speed,
                 "engine_power": engine_power,
                 "oil_consumption": oil_consumption
@@ -381,19 +568,19 @@ async function main() {
             let haveEngine = null;
 
             let engineCheck = {}
-            engineCheck["engine_type_number"] = {
-                '$regex': req.body.engine_type_number,
+            engineCheck["engine_name"] = {
+                '$regex': req.body.engine_name,
                 '$options': 'i'
 
             }
 
-            haveEngine = await db.collection("engine_performance").find(engineCheck).toArray()
+            haveEngine = await db.collection("engine").find(engineCheck).toArray()
             // console.log(haveEngine.length);
 
 
             // Create new engine if does not exists
             if (!haveEngine.length) {
-                const resultEngine = await db.collection("engine_performance").insertOne(engineNew);
+                const resultEngine = await db.collection("engine").insertOne(engineNew);
 
             }
 
@@ -414,10 +601,10 @@ async function main() {
 
 
 
-            if (req.body.engine_type_number) {
+            if (req.body.engine_name) {
 
-                criteria['engine_type_number'] = {
-                    "$regex": req.body.engine_type_number,
+                criteria['engine_name'] = {
+                    "$regex": req.body.engine_name,
                     "$options": "i"
                 }
             }
@@ -437,7 +624,7 @@ async function main() {
 
 
 
-            let newEngineArray = await MongoUtil.getDB().collection("engine_performance").find(criteria, {
+            let newEngineArray = await MongoUtil.getDB().collection("engine").find(criteria, {
                 // PROJECTION 
                 '_id': 1
             }).toArray();
@@ -464,11 +651,10 @@ async function main() {
                 "email": email,
                 "rating": rating,
                 "description": description,
-                "still_in_production": still_in_production,
                 "cost_price": cost_price,
-
+                "image": image,
                 // add new engine ID to new car entry
-                "engine_performance_id": engineIdToString,
+                "engine_id": engineIdToString,
 
                 // add array of comfort features id to new car entry
                 "comfort_features_id": comfort_features_id
@@ -495,6 +681,11 @@ async function main() {
 
         }
     })
+
+
+    /*--------------------------------------------- END OF PUT ------------------------------------------------*/
+
+    /*--------------------------------------------- START OF DELETE -------------------------------------------*/
 
     // DELETE
 
@@ -526,7 +717,7 @@ async function main() {
 
 main();
 
-app.listen(3000, function () {
+app.listen(3080, function () {
     console.log("Server has started!")
 
 })

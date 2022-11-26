@@ -252,3 +252,9 @@ db.car.deleteOne(
 
 // ```
 // show collections
+
+
+//rename collection
+
+db.rrecord.renameCollection("record")
+db.engine_performance.renameCollection("engine")

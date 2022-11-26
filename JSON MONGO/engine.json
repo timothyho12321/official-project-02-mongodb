@@ -1,0 +1,44 @@
+[
+    {
+        "engine_name": "A1",
+        "top_speed": 60,
+        "engine_power": 20,
+        "oil_consumption": 1
+    },
+    {
+        "engine_name": "A2",
+        "top_speed": 70,
+        "engine_power": 30,
+        "oil_consumption": 2
+    },
+    {
+        "engine_name": "A3",
+        "top_speed": 80,
+        "engine_power": 40,
+        "oil_consumption": 2
+    },
+    {
+        "engine_name": "A4",
+        "top_speed": 90,
+        "engine_power": 50,
+        "oil_consumption": 2
+    },
+    {
+        "engine_name": "A5",
+        "top_speed": 100,
+        "engine_power": 60,
+        "oil_consumption": 3
+    },
+    {
+        "engine_name": "A6",
+        "top_speed": 110,
+        "engine_power": 70,
+        "oil_consumption": 4
+    },
+    {
+        "engine_name": "A7",
+        "top_speed": 120,
+        "engine_power": 80,
+        "oil_consumption": 5
+    }
+]
