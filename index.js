@@ -31,17 +31,43 @@ async function main() {
 
     app.get('/', function (req, res) {
 
-        res.send("This is working yippee")
-        // console.log("Warabi")
+        res.send("Basic test route is working")
+        
     })
 
     /*--------------------------------------------- START OF GET -------------------------------------------*/
 
+    // Search one car details by id
+    app.get('/car/:car_id', async function (req, res) {
+
+
+        try {
+            let results = await MongoUtil.getDB().collection("car").find({
+
+                "_id": ObjectId(req.params.car_id)
+            }).toArray();
+            console.log(results);
+
+
+            res.status(200);
+            res.json(results);
+        } catch (e) {
+            console.log(e)
+            res.status(500);
+            res.json({
+                "error": e
+            })
+        }
+
+
+    }
+
+    )
 
 
     app.get('/car', async function (req, res) {
 
-       
+
 
         // to build a search engine, we an empty criteria object (that means we want all the documents)
         let criteria = {};
@@ -170,8 +196,8 @@ async function main() {
 
 
     ///////////////////////// GET ROUTE FOR CURRENTENGINESDB /////////////////////////////////////////
-   
-   
+
+
     app.get('/engine', async function (req, res) {
 
         let criteria = {}
@@ -183,7 +209,7 @@ async function main() {
 
     })
 
-   
+
 
     /*--------------------------------------------- START OF POST -------------------------------------------*/
 
