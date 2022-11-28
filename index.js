@@ -32,7 +32,7 @@ async function main() {
     app.get('/', function (req, res) {
 
         res.send("Basic test route is working")
-        
+
     })
 
     /*--------------------------------------------- START OF GET -------------------------------------------*/
@@ -200,7 +200,30 @@ async function main() {
 
     app.get('/engine', async function (req, res) {
 
+        try {
+            let criteria = {}
+
+            let results = await MongoUtil.getDB().collection("engine").find(criteria).toArray();
+            console.log(results);
+            res.status(200)
+            res.json(results)
+        }
+        catch (e) {
+            res.status(500);
+            res.json(
+                {"error": e}
+            )
+        }
+
+
+    })
+
+    ///////////////////////// GET ROUTE Search Engine by ID /////////////////////////////////////////
+
+    app.get('/engine/:engine_id', async function (req, res) {
+
         let criteria = {}
+        criteria["_id"] = ObjectId(req.params.engine_id)
 
         let results = await MongoUtil.getDB().collection("engine").find(criteria).toArray();
         console.log(results);
@@ -208,8 +231,6 @@ async function main() {
         res.json(results)
 
     })
-
-
 
     /*--------------------------------------------- START OF POST -------------------------------------------*/
 
