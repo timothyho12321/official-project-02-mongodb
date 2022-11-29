@@ -31,17 +31,43 @@ async function main() {
 
     app.get('/', function (req, res) {
 
-        res.send("This is working yippee")
-        // console.log("Warabi")
+        res.send("Basic test route is working")
+
     })
 
     /*--------------------------------------------- START OF GET -------------------------------------------*/
 
+    // Search one car details by id
+    app.get('/car/:car_id', async function (req, res) {
+
+
+        try {
+            let results = await MongoUtil.getDB().collection("car").find({
+
+                "_id": ObjectId(req.params.car_id)
+            }).toArray();
+            console.log(results);
+
+
+            res.status(200);
+            res.json(results);
+        } catch (e) {
+            console.log(e)
+            res.status(500);
+            res.json({
+                "error": e
+            })
+        }
+
+
+    }
+
+    )
 
 
     app.get('/car', async function (req, res) {
 
-       
+
 
         // to build a search engine, we an empty criteria object (that means we want all the documents)
         let criteria = {};
@@ -170,11 +196,34 @@ async function main() {
 
 
     ///////////////////////// GET ROUTE FOR CURRENTENGINESDB /////////////////////////////////////////
-   
-   
+
+
     app.get('/engine', async function (req, res) {
 
+        try {
+            let criteria = {}
+
+            let results = await MongoUtil.getDB().collection("engine").find(criteria).toArray();
+            console.log(results);
+            res.status(200)
+            res.json(results)
+        }
+        catch (e) {
+            res.status(500);
+            res.json(
+                {"error": e}
+            )
+        }
+
+
+    })
+
+    ///////////////////////// GET ROUTE Search Engine by ID /////////////////////////////////////////
+
+    app.get('/engine/:engine_id', async function (req, res) {
+
         let criteria = {}
+        criteria["_id"] = ObjectId(req.params.engine_id)
 
         let results = await MongoUtil.getDB().collection("engine").find(criteria).toArray();
         console.log(results);
@@ -182,8 +231,6 @@ async function main() {
         res.json(results)
 
     })
-
-   
 
     /*--------------------------------------------- START OF POST -------------------------------------------*/
 
@@ -209,9 +256,9 @@ async function main() {
             let image = req.body.image;
 
             let engine_name = req.body.engine_name
-            let top_speed = req.body.top_speed
-            let engine_power = req.body.engine_power
-            let oil_consumption = req.body.oil_consumption
+            // let top_speed = req.body.top_speed
+            // let engine_power = req.body.engine_power
+            // let oil_consumption = req.body.oil_consumption
 
             // Setting the tags of comfort feature in the body -
             // take in ID as the value, not name 
@@ -253,9 +300,9 @@ async function main() {
 
             let engineNew = {
                 "engine_name": engine_name,
-                "top_speed": top_speed,
-                "engine_power": engine_power,
-                "oil_consumption": oil_consumption
+                // "top_speed": top_speed,
+                // "engine_power": engine_power,
+                // "oil_consumption": oil_consumption
 
             }
 
@@ -307,18 +354,18 @@ async function main() {
                 }
             }
 
-            if (req.body.top_speed) {
+            // if (req.body.top_speed) {
 
-                criteria['top_speed'] = req.body.top_speed
-            }
-            if (req.body.engine_power) {
+            //     criteria['top_speed'] = req.body.top_speed
+            // }
+            // if (req.body.engine_power) {
 
-                criteria['engine_power'] = req.body.engine_power
-            }
-            if (req.body.oil_consumption) {
+            //     criteria['engine_power'] = req.body.engine_power
+            // }
+            // if (req.body.oil_consumption) {
 
-                criteria['oil_consumption'] = req.body.oil_consumption
-            }
+            //     criteria['oil_consumption'] = req.body.oil_consumption
+            // }
 
 
 
@@ -544,9 +591,9 @@ async function main() {
             let image = req.body.image;
 
             let engine_name = req.body.engine_name
-            let top_speed = req.body.top_speed
-            let engine_power = req.body.engine_power
-            let oil_consumption = req.body.oil_consumption
+            // let top_speed = req.body.top_speed
+            // let engine_power = req.body.engine_power
+            // let oil_consumption = req.body.oil_consumption
 
             // Setting the tags of comfort feature in the body -
             // take in ID as the value, not name 
@@ -555,9 +602,9 @@ async function main() {
 
             let engineNew = {
                 "engine_name": engine_name,
-                "top_speed": top_speed,
-                "engine_power": engine_power,
-                "oil_consumption": oil_consumption
+                // "top_speed": top_speed,
+                // "engine_power": engine_power,
+                // "oil_consumption": oil_consumption
 
             }
 
@@ -609,18 +656,18 @@ async function main() {
                 }
             }
 
-            if (req.body.top_speed) {
+            // if (req.body.top_speed) {
 
-                criteria['top_speed'] = req.body.top_speed
-            }
-            if (req.body.engine_power) {
+            //     criteria['top_speed'] = req.body.top_speed
+            // }
+            // if (req.body.engine_power) {
 
-                criteria['engine_power'] = req.body.engine_power
-            }
-            if (req.body.oil_consumption) {
+            //     criteria['engine_power'] = req.body.engine_power
+            // }
+            // if (req.body.oil_consumption) {
 
-                criteria['oil_consumption'] = req.body.oil_consumption
-            }
+            //     criteria['oil_consumption'] = req.body.oil_consumption
+            // }
 
 
 
@@ -634,8 +681,7 @@ async function main() {
             // convert Engine ID to string 
             let engineIdToString = idNewEngine.toString();
 
-            // STOP HERE LINK THE OBJECT ID AS REFERENCE FOR THE NEW CAR
-            // CONTINUE HERE TONIGHT
+          
 
 
             let modifiedDocument = {

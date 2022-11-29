@@ -18,9 +18,9 @@ description: yup.string().required(),
 cost_price: yup.number().required(),
 
 engine_name: yup.string().required(),
-top_speed: yup.number().required(),
-engine_power: yup.number().required(),
-oil_consumption: yup.number().required(),
+// top_speed: yup.number().required(),
+// engine_power: yup.number().required(),
+// oil_consumption: yup.number().required(),
 comfort_features_id:  yup.array().required()
 })
 
