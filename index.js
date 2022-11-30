@@ -46,9 +46,50 @@ async function main() {
 
                 "_id": ObjectId(req.params.car_id)
             }).toArray();
-            console.log(results);
 
 
+            let searchIDForEngine = results[0].engine_id
+            // console.log(searchIDForEngine);
+
+            let arrayOfEngineByCarSearch = await MongoUtil.getDB().collection("engine").find(
+                { _id: ObjectId(searchIDForEngine) }
+
+
+            ).toArray();
+            // console.log(arrayOfEngineByCarSearch)
+
+
+            results[0].engine_id = arrayOfEngineByCarSearch[0].engine_name
+
+
+
+            //Make variable for comfort_features_id of car 
+            let extractComfortFeaturesIDArray = results[0].comfort_features_id
+            // console.log(extractComfortFeaturesIDArray);
+
+            //Create new array of comfort features name after searching
+            let comfort_features_name = []
+
+            for (let c of extractComfortFeaturesIDArray) {
+                let oneComfortFeatureName = await MongoUtil.getDB().collection("comfort_features").find(
+                    { _id: ObjectId(c) }).toArray()
+                // console.log(oneComfortFeatureName)
+                let extractComfortFeatureName = oneComfortFeatureName[0].comfort_feature
+                //console.log(extractComfortFeatureName)
+                comfort_features_name.push(extractComfortFeatureName)
+
+            }
+
+            results[0].comfort_features_id = comfort_features_name
+
+
+
+
+
+
+
+
+            // console.log(results);
             res.status(200);
             res.json(results);
         } catch (e) {
@@ -211,7 +252,7 @@ async function main() {
         catch (e) {
             res.status(500);
             res.json(
-                {"error": e}
+                { "error": e }
             )
         }
 
@@ -681,7 +722,7 @@ async function main() {
             // convert Engine ID to string 
             let engineIdToString = idNewEngine.toString();
 
-          
+
 
 
             let modifiedDocument = {
