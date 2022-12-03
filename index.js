@@ -46,9 +46,50 @@ async function main() {
 
                 "_id": ObjectId(req.params.car_id)
             }).toArray();
-            console.log(results);
 
 
+            let searchIDForEngine = results[0].engine_id
+            // console.log(searchIDForEngine);
+
+            let arrayOfEngineByCarSearch = await MongoUtil.getDB().collection("engine").find(
+                { _id: ObjectId(searchIDForEngine) }
+
+
+            ).toArray();
+            // console.log(arrayOfEngineByCarSearch)
+
+
+            results[0].engine_id = arrayOfEngineByCarSearch[0].engine_name
+
+
+
+            //Make variable for comfort_features_id of car 
+            let extractComfortFeaturesIDArray = results[0].comfort_features_id
+            // console.log(extractComfortFeaturesIDArray);
+
+            //Create new array of comfort features name after searching
+            let comfort_features_name = []
+
+            for (let c of extractComfortFeaturesIDArray) {
+                let oneComfortFeatureName = await MongoUtil.getDB().collection("comfort_features").find(
+                    { _id: ObjectId(c) }).toArray()
+                // console.log(oneComfortFeatureName)
+                let extractComfortFeatureName = oneComfortFeatureName[0].comfort_feature
+                //console.log(extractComfortFeatureName)
+                comfort_features_name.push(extractComfortFeatureName)
+
+            }
+
+            results[0].comfort_features_id = comfort_features_name
+
+
+
+
+
+
+
+
+            // console.log(results);
             res.status(200);
             res.json(results);
         } catch (e) {
@@ -211,7 +252,7 @@ async function main() {
         catch (e) {
             res.status(500);
             res.json(
-                {"error": e}
+                { "error": e }
             )
         }
 
@@ -507,7 +548,7 @@ async function main() {
 
     // ROUTE TO GET DETAILS OF ONE POST FROM A USER BY the POST ID  
 
-    app.get('/car/:id', async function (req, res) {
+    app.get('/car/comfort-feature-id-to-edit/:id', async function (req, res) {
 
         // to build a search engine, we an empty criteria object (that means we want all the documents)
 
@@ -538,31 +579,35 @@ async function main() {
 
         }
 
-        for (let eachcar of result) {
 
-            let searchIDForCFTags = eachcar.comfort_features_id
-            // console.log(searchIDForCFTags);
-            //searchIDForTags is an array of comfort features tags
+        // KEEP AS ID - FRONT END INPUT AS ID COMFORT FEATURES FOR EDIT 
+        // DELETE 
 
-            let nameForCFTags = []
-            for (let eachCF of searchIDForCFTags) {
-                let arrayOfCF = await MongoUtil.getDB().collection("comfort_features").find(
-                    { _id: ObjectId(eachCF) }
+        // for (let eachcar of result) {
+
+        //     let searchIDForCFTags = eachcar.comfort_features_id
+        //     console.log(searchIDForCFTags);
+        //     searchIDForTags is an array of comfort features tags
+
+        //     let nameForCFTags = []
+        //     for (let eachCF of searchIDForCFTags) {
+        //         let arrayOfCF = await MongoUtil.getDB().collection("comfort_features").find(
+        //             { _id: ObjectId(eachCF) }
 
 
-                ).toArray();
-                console.log("Each CF Search", arrayOfCF)
+        //         ).toArray();
+        //         console.log("Each CF Search", arrayOfCF)
 
-                let getNameFromEachCFArray = arrayOfCF[0].comfort_feature
-                // console.log(getNameFromEachCFArray);
+        //         let getNameFromEachCFArray = arrayOfCF[0].comfort_feature
+        //         console.log(getNameFromEachCFArray);
 
-                nameForCFTags.push(getNameFromEachCFArray);
-            }
-            // console.log(nameForCFTags);
-            // SET THE RETURN OF THE COMFORT FEATURES TO ARRAY OF NAME OF COMFORT FEATURES
-            eachcar.comfort_features_id = nameForCFTags
+        //         nameForCFTags.push(getNameFromEachCFArray);
+        //     }
+        //     console.log(nameForCFTags);
+        //     SET THE RETURN OF THE COMFORT FEATURES TO ARRAY OF NAME OF COMFORT FEATURES
+        //     eachcar.comfort_features_id = nameForCFTags
 
-        }
+        // }
 
 
 
@@ -681,7 +726,7 @@ async function main() {
             // convert Engine ID to string 
             let engineIdToString = idNewEngine.toString();
 
-          
+
 
 
             let modifiedDocument = {
