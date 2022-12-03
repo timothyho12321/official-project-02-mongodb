@@ -141,14 +141,26 @@ async function main() {
 
 
         }
-        if (req.query.cost_price) {
-            // adding the 'description' key to the criteria object and assign req.query.description
-            // as the value
-            // console.log("This is query string seats ==> " , req.query.seats)
-            criteria["cost_price"] = { "$lte": parseInt(req.query.cost_price) }
 
+
+
+        if (req.query.min_price  && req.query.max_price ) {
+            criteria["$and"] =
+                [
+                    { "cost_price": { "$gte": parseInt(req.query.min_price) } },
+                    { "cost_price": { "$lte": parseInt(req.query.max_price) } }
+                ]
+        }
+
+        if (req.query.min_price  && !req.query.max_price) {
+            criteria["cost_price"] = { "$gte": parseInt(req.query.min_price) }
+        }
+        if (req.query.max_price  && !req.query.min_price ) {
+            criteria["cost_price"] = { "$lte": parseInt(req.query.max_price) }
 
         }
+
+
 
         if (req.query.rating) {
             // adding the 'description' key to the criteria object and assign req.query.description
@@ -160,7 +172,7 @@ async function main() {
 
         }
 
-        console.log(criteria);
+        console.log("CURRENT CRITERIA", criteria);
 
 
 
