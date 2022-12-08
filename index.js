@@ -65,7 +65,7 @@ async function main() {
 
             //Make variable for comfort_features_id of car 
             let extractComfortFeaturesIDArray = results[0].comfort_features_id
-            // console.log(extractComfortFeaturesIDArray);
+            // console.log("variable",extractComfortFeaturesIDArray);
 
             //Create new array of comfort features name after searching
             let comfort_features_name = []
@@ -82,7 +82,12 @@ async function main() {
 
             results[0].comfort_features_id = comfort_features_name
 
+            // ADD NEW KEY VALUE PAIR TO KEEP COMFORT FEATURES ID WHEN
+            // CALL INFO FOR ONE CAR --> IN ORDER TO DO PUT FOR 
+            // COMMENTS 
 
+            let resultObject = results[0]
+            resultObject['keep_comfort_features_id'] = extractComfortFeaturesIDArray
 
 
 
@@ -791,7 +796,7 @@ async function main() {
                 .updateOne({
                     "_id": ObjectId(req.params.car_id)
                 }, {
-                    '$push': {"comments": comments}
+                    '$push': { "comments": comments }
                 });
 
             res.status(200);
@@ -834,9 +839,34 @@ async function main() {
         }
     })
 
+    /////////////////// DELETE COMMENT/////////////////////////////////
+    app.put('/delete-comment/:car_id', async function (req, res) {
+        try {
 
+            await MongoUtil.getDB().collection('car').updateOne({
+                "comments.username": req.body.username
+            }, {
+                "$pull": {
+                    comments: { "username": req.body.username }
+                }
+            }
 
+            )
 
+            res.status(200)
+            res.json({ "message": "Succesfully deleted comment." })
+
+        } catch (e) {
+            res.status(500)
+            res.json({
+                "error": e
+            })
+            console.log(e)
+
+        }
+
+    })
+   
 
 }
 
