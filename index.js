@@ -664,6 +664,11 @@ async function main() {
             let comfort_features_id = req.body.comfort_features_id
 
 
+            // For comments, key as object in Front End
+            let comments = req.body.comments;
+
+
+
             let engineNew = {
                 "engine_name": engine_name,
                 // "top_speed": top_speed,
@@ -772,11 +777,21 @@ async function main() {
 
             }
 
-            const result = await MongoUtil.getDB().collection('car')
+            console.log("Checking content comments", comments)
+
+            let result = await MongoUtil.getDB().collection('car')
                 .updateOne({
                     "_id": ObjectId(req.params.car_id)
                 }, {
                     '$set': modifiedDocument
+                });
+
+
+            result = await MongoUtil.getDB().collection('car')
+                .updateOne({
+                    "_id": ObjectId(req.params.car_id)
+                }, {
+                    '$push': {"comments": comments}
                 });
 
             res.status(200);
