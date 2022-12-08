@@ -144,7 +144,7 @@ async function main() {
 
 
 
-        if (req.query.min_price  && req.query.max_price ) {
+        if (req.query.min_price && req.query.max_price) {
             criteria["$and"] =
                 [
                     { "cost_price": { "$gte": parseInt(req.query.min_price) } },
@@ -152,10 +152,10 @@ async function main() {
                 ]
         }
 
-        if (req.query.min_price  && !req.query.max_price) {
+        if (req.query.min_price && !req.query.max_price) {
             criteria["cost_price"] = { "$gte": parseInt(req.query.min_price) }
         }
-        if (req.query.max_price  && !req.query.min_price ) {
+        if (req.query.max_price && !req.query.min_price) {
             criteria["cost_price"] = { "$lte": parseInt(req.query.max_price) }
 
         }
@@ -317,6 +317,10 @@ async function main() {
             // take in ID as the value, not name 
             let comfort_features_id = req.body.comfort_features_id
 
+            // For comments, key as an empty array when first post is 
+            //created
+            let comments = [];
+
 
             if (!name_of_model || !year_of_launch) {
                 // they don't end the route function
@@ -343,9 +347,7 @@ async function main() {
             //     "description": description,
             //     "cost_price": cost_price,
 
-            //     "top_speed": top_speed,
-            //     "engine_power": engine_power,
-            //     "oil_consumption": oil_consumption
+            //     "comments": comments,
 
             // }
 
@@ -475,13 +477,18 @@ async function main() {
                 "engine_id": idNewEngine,
 
                 // add array of comfort features id to new car entry
-                "comfort_features_id": comfortFeaturesTags
+                "comfort_features_id": comfortFeaturesTags,
+
+                // push into an array of comments
+                // each comment is an object
+                // "comments": comments
+                "comments": comments
             }
 
 
             const result = await db.collection("car").insertOne(carNew);
             res.status(200);  // set the status to 200, meaning "OK"
-            res.send(result);
+            res.json(result);
         } catch (e) {
             console.log(e);
             res.status(500);
