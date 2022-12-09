@@ -65,7 +65,7 @@ async function main() {
 
             //Make variable for comfort_features_id of car 
             let extractComfortFeaturesIDArray = results[0].comfort_features_id
-            // console.log(extractComfortFeaturesIDArray);
+            // console.log("variable",extractComfortFeaturesIDArray);
 
             //Create new array of comfort features name after searching
             let comfort_features_name = []
@@ -82,7 +82,12 @@ async function main() {
 
             results[0].comfort_features_id = comfort_features_name
 
+            // ADD NEW KEY VALUE PAIR TO KEEP COMFORT FEATURES ID WHEN
+            // CALL INFO FOR ONE CAR --> IN ORDER TO DO PUT FOR 
+            // COMMENTS 
 
+            let resultObject = results[0]
+            resultObject['keep_comfort_features_id'] = extractComfortFeaturesIDArray
 
 
 
@@ -144,7 +149,7 @@ async function main() {
 
 
 
-        if (req.query.min_price  && req.query.max_price ) {
+        if (req.query.min_price && req.query.max_price) {
             criteria["$and"] =
                 [
                     { "cost_price": { "$gte": parseInt(req.query.min_price) } },
@@ -152,10 +157,10 @@ async function main() {
                 ]
         }
 
-        if (req.query.min_price  && !req.query.max_price) {
+        if (req.query.min_price && !req.query.max_price) {
             criteria["cost_price"] = { "$gte": parseInt(req.query.min_price) }
         }
-        if (req.query.max_price  && !req.query.min_price ) {
+        if (req.query.max_price && !req.query.min_price) {
             criteria["cost_price"] = { "$lte": parseInt(req.query.max_price) }
 
         }
@@ -317,6 +322,10 @@ async function main() {
             // take in ID as the value, not name 
             let comfort_features_id = req.body.comfort_features_id
 
+            // For comments, key as an empty array when first post is 
+            //created
+            let comments = [];
+
 
             if (!name_of_model || !year_of_launch) {
                 // they don't end the route function
@@ -343,9 +352,7 @@ async function main() {
             //     "description": description,
             //     "cost_price": cost_price,
 
-            //     "top_speed": top_speed,
-            //     "engine_power": engine_power,
-            //     "oil_consumption": oil_consumption
+            //     "comments": comments,
 
             // }
 
@@ -475,13 +482,18 @@ async function main() {
                 "engine_id": idNewEngine,
 
                 // add array of comfort features id to new car entry
-                "comfort_features_id": comfortFeaturesTags
+                "comfort_features_id": comfortFeaturesTags,
+
+                // push into an array of comments
+                // each comment is an object
+                // "comments": comments
+                "comments": comments
             }
 
 
             const result = await db.collection("car").insertOne(carNew);
             res.status(200);  // set the status to 200, meaning "OK"
-            res.send(result);
+            res.json(result);
         } catch (e) {
             console.log(e);
             res.status(500);
@@ -657,6 +669,11 @@ async function main() {
             let comfort_features_id = req.body.comfort_features_id
 
 
+            // For comments, key as object in Front End
+            let comments = req.body.comments;
+
+
+
             let engineNew = {
                 "engine_name": engine_name,
                 // "top_speed": top_speed,
@@ -765,11 +782,21 @@ async function main() {
 
             }
 
-            const result = await MongoUtil.getDB().collection('car')
+            console.log("Checking content comments", comments)
+
+            let result = await MongoUtil.getDB().collection('car')
                 .updateOne({
                     "_id": ObjectId(req.params.car_id)
                 }, {
                     '$set': modifiedDocument
+                });
+
+
+            result = await MongoUtil.getDB().collection('car')
+                .updateOne({
+                    "_id": ObjectId(req.params.car_id)
+                }, {
+                    '$push': { "comments": comments }
                 });
 
             res.status(200);
@@ -812,9 +839,34 @@ async function main() {
         }
     })
 
+    /////////////////// DELETE COMMENT/////////////////////////////////
+    app.put('/delete-comment/:car_id', async function (req, res) {
+        try {
 
+            await MongoUtil.getDB().collection('car').updateOne({
+                "comments.email": req.body.email
+            }, {
+                "$pull": {
+                    comments: { "email": req.body.email }
+                }
+            }
 
+            )
 
+            res.status(200)
+            res.json({ "message": "Succesfully deleted comment." })
+
+        } catch (e) {
+            res.status(500)
+            res.json({
+                "error": e
+            })
+            console.log(e)
+
+        }
+
+    })
+   
 
 }
 

@@ -23,15 +23,22 @@
             3003,
             3004
         ],
-        "reviews": [
+        "comments": [
             {
-                "id": 4001,
-                "other_users_reviews": "Great post. I will buy this car."
+                "username": "Tim",
+                "email": "tim@gmail.com",
+                "other_comment": "Great post. I will buy this car."
             },
+
             {
-                "id": 4002,
-                "other_users_reviews": "Best review article. I agree."
+                "username": "John",
+                "email": "john@gmail.com",
+                "other_comment": "Not exactly my favourite car."
             }
         ]
     }
 ]
+
+
+
+
