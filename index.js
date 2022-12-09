@@ -844,10 +844,10 @@ async function main() {
         try {
 
             await MongoUtil.getDB().collection('car').updateOne({
-                "comments.username": req.body.username
+                "comments.email": req.body.email
             }, {
                 "$pull": {
-                    comments: { "username": req.body.username }
+                    comments: { "email": req.body.email }
                 }
             }
 
