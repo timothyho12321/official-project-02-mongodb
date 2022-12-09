@@ -872,7 +872,7 @@ async function main() {
 
 main();
 
-app.listen(3080, function () {
+app.listen(process.env.PORT||3080, function () {
     console.log("Server has started!")
 
 })
