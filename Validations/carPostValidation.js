@@ -17,10 +17,9 @@ rating: yup.number().min(1, "Minimum is 1 star").max(5, "Maximum is 5 star").req
 description: yup.string().required(),
 cost_price: yup.number().required(),
 
+
 engine_name: yup.string().required(),
-// top_speed: yup.number().required(),
-// engine_power: yup.number().required(),
-// oil_consumption: yup.number().required(),
+
 comfort_features_id:  yup.array().required()
 })
 
