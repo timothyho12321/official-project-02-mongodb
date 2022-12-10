@@ -641,7 +641,7 @@ async function main() {
 
     )
 
-
+// ROUTE FOR UPDATE CAR AND COMMENT 
     app.put('/car/:car_id', validation(carPostSchema), async function (req, res) {
 
 
@@ -861,6 +861,195 @@ async function main() {
 
 
     })
+
+
+
+
+    // ROUTE FOR UPDATE CAR ONLY
+    app.put('/car_only/:car_id', validation(carPostSchema), async function (req, res) {
+
+        
+            try {
+                
+
+                let name_of_model = req.body.name_of_model;
+                let year_of_launch = req.body.year_of_launch;
+                let brand = req.body.brand;
+                let type = req.body.type;
+                let seats = req.body.seats;
+                let color = req.body.color;
+                let land_terrain = req.body.land_terrain;
+                let username = req.body.username;
+                let email = req.body.email;
+                let rating = req.body.rating;
+                let description = req.body.description;
+                let cost_price = req.body.cost_price;
+                let image = req.body.image;
+
+                let engine_name = req.body.engine_name
+                // let top_speed = req.body.top_speed
+                // let engine_power = req.body.engine_power
+                // let oil_consumption = req.body.oil_consumption
+
+                // Setting the tags of comfort feature in the body -
+                // take in ID as the value, not name 
+                let comfort_features_id = req.body.comfort_features_id
+
+
+                // For comments, key as object in Front End
+                // let comments = req.body.comments;
+
+
+
+                let engineNew = {
+                    "engine_name": engine_name,
+                    // "top_speed": top_speed,
+                    // "engine_power": engine_power,
+                    // "oil_consumption": oil_consumption
+
+                }
+
+
+                const db = MongoUtil.getDB();
+
+                // create search whether engine type number already exists
+                let haveEngine = null;
+
+                let engineCheck = {}
+                engineCheck["engine_name"] = {
+                    '$regex': req.body.engine_name,
+                    '$options': 'i'
+
+                }
+
+                haveEngine = await db.collection("engine").find(engineCheck).toArray()
+                // console.log(haveEngine.length);
+
+
+                // Create new engine if does not exists
+                if (!haveEngine.length) {
+                    const resultEngine = await db.collection("engine").insertOne(engineNew);
+
+                }
+
+
+
+
+                // FIND ID OF NEW ENGINE
+                let criteria = {};
+
+                // add to criteria if have matching string 
+                // if (req.body.top_speed) {
+
+                //     criteria['top_speed'] = {
+                //         "$regex": req.body.top_speed,  
+                //         "$options": "i"  
+                //     }
+                // }
+
+
+
+                if (req.body.engine_name) {
+
+                    criteria['engine_name'] = {
+                        "$regex": req.body.engine_name,
+                        "$options": "i"
+                    }
+                }
+
+                // if (req.body.top_speed) {
+
+                //     criteria['top_speed'] = req.body.top_speed
+                // }
+                // if (req.body.engine_power) {
+
+                //     criteria['engine_power'] = req.body.engine_power
+                // }
+                // if (req.body.oil_consumption) {
+
+                //     criteria['oil_consumption'] = req.body.oil_consumption
+                // }
+
+
+
+                let newEngineArray = await MongoUtil.getDB().collection("engine").find(criteria, {
+                    // PROJECTION 
+                    '_id': 1
+                }).toArray();
+
+                const idNewEngine = newEngineArray[0]._id
+
+                // convert Engine ID to string 
+                let engineIdToString = idNewEngine.toString();
+
+
+
+
+                let modifiedDocument = {
+
+                    "name_of_model": name_of_model,
+                    "year_of_launch": year_of_launch,
+                    "brand": brand,
+                    "type": type,
+                    "seats": seats,
+                    "color": color,
+                    "land_terrain": land_terrain,
+                    "username": username,
+                    "email": email,
+                    "rating": rating,
+                    "description": description,
+                    "cost_price": cost_price,
+                    "image": image,
+                    // add new engine ID to new car entry
+                    "engine_id": engineIdToString,
+
+                    // add array of comfort features id to new car entry
+                    "comfort_features_id": comfort_features_id
+
+
+                }
+
+                
+
+                let result = await MongoUtil.getDB().collection('car')
+                    .updateOne({
+                        "_id": ObjectId(req.params.car_id)
+                    }, {
+                        '$set': modifiedDocument
+                    });
+
+
+                // result = await MongoUtil.getDB().collection('car')
+                //     .updateOne({
+                //         "_id": ObjectId(req.params.car_id)
+                //     }, {
+                //         '$push': { "comments": comments }
+                //     });
+
+                res.status(200);
+                res.json({
+                    'message': 'Update success'
+                });
+
+            } catch (e) {
+                res.status(500);
+                res.send(e);
+                console.log(e);
+
+            }
+
+
+
+
+        
+
+
+
+
+
+    })
+
+
 
 
     /*--------------------------------------------- END OF PUT ------------------------------------------------*/

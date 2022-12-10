@@ -1,6 +1,6 @@
 //Code to insert data into mongodb
 
-db.car.insertOne({
+db.car.insertOne(
 
     {
         "name_of_model": "Altitude 01",
@@ -30,7 +30,7 @@ db.car.insertOne({
             }
        
       }
-})
+)
 
 db.car.insertOne({
 
